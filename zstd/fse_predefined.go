@@ -6,8 +6,9 @@ package zstd
 
 import (
 	"fmt"
-	"math"
 	"sync"
+
+	"github.com/klauspost/compress/math"
 )
 
 var (

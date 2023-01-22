@@ -3,10 +3,11 @@ package zstd
 import (
 	"errors"
 	"fmt"
-	"math"
-	"math/bits"
 	"runtime"
 	"strings"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 )
 
 // EOption is an option for creating a encoder.

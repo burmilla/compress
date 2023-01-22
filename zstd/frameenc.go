@@ -8,8 +8,9 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"math"
-	"math/bits"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 )
 
 type frameHeader struct {

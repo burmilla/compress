@@ -2,8 +2,9 @@ package flate
 
 import (
 	"io"
-	"math"
 	"sync"
+
+	"github.com/klauspost/compress/math"
 )
 
 const (

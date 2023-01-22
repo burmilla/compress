@@ -12,11 +12,12 @@ import (
 	"hash/crc32"
 	"io"
 	"io/fs"
-	"math/rand"
 	"os"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/klauspost/compress/math/rand"
 )
 
 // TODO(adg): a more sophisticated test suite

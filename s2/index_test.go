@@ -5,10 +5,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"sync"
 	"testing"
+
+	"github.com/klauspost/compress/math/rand"
 
 	"github.com/klauspost/compress/s2"
 )

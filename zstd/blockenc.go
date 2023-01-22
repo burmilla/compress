@@ -7,8 +7,9 @@ package zstd
 import (
 	"errors"
 	"fmt"
-	"math"
-	"math/bits"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 
 	"github.com/klauspost/compress/huff0"
 )

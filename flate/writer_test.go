@@ -10,13 +10,14 @@ import (
 	"compress/flate"
 	"fmt"
 	"io"
-	"math"
-	"math/rand"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/rand"
 )
 
 func TestWriterMemUsage(t *testing.T) {

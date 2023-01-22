@@ -7,7 +7,8 @@ package zstd
 import (
 	"errors"
 	"fmt"
-	"math"
+
+	"github.com/klauspost/compress/math"
 )
 
 const (

@@ -8,11 +8,12 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/klauspost/compress/math/rand"
 
 	"github.com/klauspost/compress/internal/snapref"
 	"github.com/klauspost/compress/zip"

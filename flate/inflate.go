@@ -12,8 +12,9 @@ import (
 	"compress/flate"
 	"fmt"
 	"io"
-	"math/bits"
 	"sync"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 const (

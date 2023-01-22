@@ -8,7 +8,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"math"
+
+	"github.com/klauspost/compress/math"
 )
 
 const (

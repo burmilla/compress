@@ -8,7 +8,8 @@ package flate
 import (
 	"encoding/binary"
 	"fmt"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 type fastEnc interface {

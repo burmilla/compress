@@ -11,14 +11,15 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"math"
-	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/rand"
 
 	"github.com/klauspost/compress/internal/snapref"
 	"github.com/klauspost/compress/zip"

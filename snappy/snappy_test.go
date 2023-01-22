@@ -10,12 +10,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/klauspost/compress/math/rand"
 
 	"github.com/klauspost/compress/s2"
 )

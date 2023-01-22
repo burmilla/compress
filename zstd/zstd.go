@@ -8,8 +8,9 @@ import (
 	"encoding/binary"
 	"errors"
 	"log"
-	"math"
-	"math/bits"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 )
 
 // enable debug printing

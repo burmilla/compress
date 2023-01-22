@@ -14,7 +14,8 @@ package fse
 import (
 	"errors"
 	"fmt"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 const (

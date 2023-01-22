@@ -4,7 +4,7 @@
 package s2
 
 import (
-	"math/bits"
+	"github.com/klauspost/compress/math/bits"
 )
 
 // encodeBlock encodes a non-empty src to a guaranteed-large-enough dst. It

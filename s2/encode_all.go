@@ -8,7 +8,8 @@ package s2
 import (
 	"bytes"
 	"encoding/binary"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 func load32(b []byte, i int) uint32 {

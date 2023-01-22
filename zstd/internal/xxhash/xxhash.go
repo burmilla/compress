@@ -7,7 +7,8 @@ package xxhash
 import (
 	"encoding/binary"
 	"errors"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 const (

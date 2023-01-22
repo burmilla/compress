@@ -2,7 +2,8 @@ package zstd
 
 import (
 	"fmt"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 
 	"github.com/klauspost/compress/zstd/internal/xxhash"
 )

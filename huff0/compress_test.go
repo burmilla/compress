@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/klauspost/compress/math/rand"
 
 	"github.com/klauspost/compress/flate"
 	"github.com/klauspost/compress/zip"

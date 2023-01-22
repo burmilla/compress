@@ -11,9 +11,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math"
 	"runtime"
 	"sync"
+
+	"github.com/klauspost/compress/math"
 )
 
 var (

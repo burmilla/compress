@@ -4,7 +4,7 @@
 
 package zstd
 
-import "math/bits"
+import "github.com/klauspost/compress/math/bits"
 
 type seqCoders struct {
 	llEnc, ofEnc, mlEnc    *fseEncoder

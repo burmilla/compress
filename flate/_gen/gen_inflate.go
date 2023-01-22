@@ -9,6 +9,8 @@ package main
 import (
 	"os"
 	"strings"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 func main() {

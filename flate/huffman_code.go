@@ -5,8 +5,8 @@
 package flate
 
 import (
-	"math"
-	"math/bits"
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 )
 
 const (
@@ -78,7 +78,9 @@ func reverseBits(number uint16, bitLength byte) uint16 {
 	return bits.Reverse16(number << ((16 - bitLength) & 15))
 }
 
-func maxNode() literalNode { return literalNode{math.MaxUint16, math.MaxUint16} }
+func maxNode() literalNode {
+	return literalNode{math.MaxUint16, math.MaxUint16}
+}
 
 func newHuffmanEncoder(size int) *huffmanEncoder {
 	// Make capacity to next power of two.

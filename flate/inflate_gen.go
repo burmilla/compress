@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"math/bits"
+	"github.com/klauspost/compress/math/bits"
 	"strings"
 )
 

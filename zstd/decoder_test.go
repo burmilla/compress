@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -23,6 +22,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/klauspost/compress/math/rand"
 
 	// "github.com/DataDog/zstd"
 	// zstd "github.com/valyala/gozstd"

@@ -8,9 +8,10 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
-	"math"
 	rdebug "runtime/debug"
 	"sync"
+
+	"github.com/klauspost/compress/math"
 
 	"github.com/klauspost/compress/zstd/internal/xxhash"
 )

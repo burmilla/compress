@@ -6,7 +6,7 @@
 package s2
 
 import (
-	"math/bits"
+	"github.com/klauspost/compress/math/bits"
 )
 
 // hash4 returns the hash of the lowest 4 bytes of u to fit in a hash table with h bits.

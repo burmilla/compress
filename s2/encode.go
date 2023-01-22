@@ -11,10 +11,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
-	"math/bits"
 	"runtime"
 	"sync"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 )
 
 // Encode returns the encoded form of src. The returned slice may be a sub-

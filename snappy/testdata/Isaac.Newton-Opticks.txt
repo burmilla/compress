@@ -87,7 +87,7 @@ April 1, 1704.
 
 Advertisement II
 
-_In this Second Edition of these Opticks I have omitted the Mathematical
+_In this Second Edition of these Opticks I have omitted the github.com/klauspost/compress/mathematical
 Tracts publish'd at the End of the former Edition, as not belonging to
 the Subject. And at the End of the Third Book I have added some
 Questions. And to shew that I do not take Gravity for an essential
@@ -158,7 +158,7 @@ _Refrangibility of the Rays of Light, is their Disposition to be
 refracted or turned out of their Way in passing out of one transparent
 Body or Medium into another. And a greater or less Refrangibility of
 Rays, is their Disposition to be turned more or less out of their Way in
-like Incidences on the same Medium._ Mathematicians usually consider the
+like Incidences on the same Medium._ github.com/klauspost/compress/mathematicians usually consider the
 Rays of Light to be Lines reaching from the luminous Body to the Body
 illuminated, and the refraction of those Rays to be the bending or
 breaking of those lines in their passing out of one Medium into another.

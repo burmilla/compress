@@ -6,9 +6,10 @@ package huff0
 import (
 	"errors"
 	"fmt"
-	"math"
-	"math/bits"
 	"sync"
+
+	"github.com/klauspost/compress/math"
+	"github.com/klauspost/compress/math/bits"
 
 	"github.com/klauspost/compress/fse"
 )

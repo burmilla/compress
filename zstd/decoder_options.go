@@ -7,8 +7,9 @@ package zstd
 import (
 	"errors"
 	"fmt"
-	"math/bits"
 	"runtime"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 // DOption is an option for creating a decoder.

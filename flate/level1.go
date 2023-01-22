@@ -3,7 +3,8 @@ package flate
 import (
 	"encoding/binary"
 	"fmt"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 // fastGen maintains the table for matches,

@@ -7,8 +7,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math"
 	"runtime"
+
+	"github.com/klauspost/compress/math"
 
 	. "github.com/mmcloughlin/avo/build"
 	"github.com/mmcloughlin/avo/buildtags"

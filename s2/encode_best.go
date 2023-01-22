@@ -7,7 +7,8 @@ package s2
 
 import (
 	"fmt"
-	"math/bits"
+
+	"github.com/klauspost/compress/math/bits"
 )
 
 // encodeBlockBest encodes a non-empty src to a guaranteed-large-enough dst. It

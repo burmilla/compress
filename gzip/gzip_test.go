@@ -8,12 +8,13 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"math/rand"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/klauspost/compress/math/rand"
 )
 
 // TestEmpty tests that an empty payload still forms a valid GZIP stream.
