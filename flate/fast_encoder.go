@@ -90,8 +90,7 @@ func (e *fastGen) addBlock(src []byte) int32 {
 			}
 			// Move down
 			offset := int32(len(e.hist)) - maxMatchOffset
-			// copy(e.hist[0:maxMatchOffset], e.hist[offset:])
-			*(*[maxMatchOffset]byte)(e.hist) = *(*[maxMatchOffset]byte)(e.hist[offset:])
+			copy(e.hist[0:maxMatchOffset], e.hist[offset:])
 			e.cur += offset
 			e.hist = e.hist[:maxMatchOffset]
 		}
