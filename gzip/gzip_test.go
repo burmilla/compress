@@ -8,7 +8,8 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"os"
+	"io/ioutil"
+	"math/rand"
 	"strconv"
 	"strings"
 	"testing"
@@ -29,7 +30,7 @@ func TestEmpty(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %v", err)
 	}
-	b, err := io.ReadAll(r)
+	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		t.Fatalf("ReadAll: %v", err)
 	}
@@ -62,7 +63,7 @@ func TestRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %v", err)
 	}
-	b, err := io.ReadAll(r)
+	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		t.Fatalf("ReadAll: %v", err)
 	}
@@ -147,7 +148,7 @@ func TestLatin1RoundTrip(t *testing.T) {
 			t.Errorf("NewReader: %v", err)
 			continue
 		}
-		_, err = io.ReadAll(r)
+		_, err = ioutil.ReadAll(r)
 		if err != nil {
 			t.Errorf("ReadAll: %v", err)
 			continue
@@ -217,7 +218,7 @@ func TestConcat(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	data, err := io.ReadAll(r)
+	data, err := ioutil.ReadAll(r)
 	if string(data) != "hello world\n" || err != nil {
 		t.Fatalf("ReadAll = %q, %v, want %q, nil", data, err, "hello world")
 	}
@@ -241,7 +242,7 @@ func TestWriterReset(t *testing.T) {
 var testbuf []byte
 
 func testFile(i, level int, t *testing.T) {
-	dat, _ := os.ReadFile("testdata/test.json")
+	dat, _ := ioutil.ReadFile("testdata/test.json")
 	dl := len(dat)
 	if len(testbuf) != i*dl {
 		// Make results predictable
@@ -272,7 +273,7 @@ func testFile(i, level int, t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	decoded, err := io.ReadAll(r)
+	decoded, err := ioutil.ReadAll(r)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -346,7 +347,7 @@ func testBigGzip(i int, t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	decoded, err := io.ReadAll(r)
+	decoded, err := ioutil.ReadAll(r)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -463,17 +464,17 @@ func BenchmarkGzipL8(b *testing.B)  { benchmarkGzipN(b, 8) }
 func BenchmarkGzipL9(b *testing.B)  { benchmarkGzipN(b, 9) }
 
 func benchmarkGzipN(b *testing.B, level int) {
-	dat, _ := os.ReadFile("testdata/test.json")
+	dat, _ := ioutil.ReadFile("testdata/test.json")
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	b.SetBytes(int64(len(dat)))
-	w, _ := NewWriterLevel(io.Discard, level)
+	w, _ := NewWriterLevel(ioutil.Discard, level)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		w.Reset(io.Discard)
+		w.Reset(ioutil.Discard)
 		n, err := w.Write(dat)
 		if n != len(dat) {
 			panic("short write")
@@ -500,7 +501,7 @@ func BenchmarkOldGzipL8(b *testing.B) { benchmarkOldGzipN(b, 8) }
 func BenchmarkOldGzipL9(b *testing.B) { benchmarkOldGzipN(b, 9) }
 
 func benchmarkOldGzipN(b *testing.B, level int) {
-	dat, _ := os.ReadFile("testdata/test.json")
+	dat, _ := ioutil.ReadFile("testdata/test.json")
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
@@ -508,10 +509,10 @@ func benchmarkOldGzipN(b *testing.B, level int) {
 	dat = append(dat, dat...)
 
 	b.SetBytes(int64(len(dat)))
-	w, _ := oldgz.NewWriterLevel(io.Discard, level)
+	w, _ := oldgz.NewWriterLevel(ioutil.Discard, level)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		w.Reset(io.Discard)
+		w.Reset(ioutil.Discard)
 		n, err := w.Write(dat)
 		if n != len(dat) {
 			panic("short write")
@@ -536,7 +537,7 @@ func BenchmarkCompressAllocations(b *testing.B) {
 				b.ReportAllocs()
 
 				for i := 0; i < b.N; i++ {
-					w, err := NewWriterLevel(io.Discard, j)
+					w, err := NewWriterLevel(ioutil.Discard, j)
 					if err != nil {
 						b.Fatal(err)
 					}
@@ -556,7 +557,7 @@ func BenchmarkCompressAllocationsSingle(b *testing.B) {
 		b.ReportAllocs()
 
 		for i := 0; i < b.N; i++ {
-			w, err := NewWriterLevel(io.Discard, level)
+			w, err := NewWriterLevel(ioutil.Discard, level)
 			if err != nil {
 				b.Fatal(err)
 			}

@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -40,7 +41,7 @@ func TestNewReaderMismatch(t *testing.T) {
 	// The hash file will be reused between runs if present.
 	const baseFile = "testdata/backup.bin"
 	const blockSize = 1024
-	hashes, err := os.ReadFile(baseFile + ".hash")
+	hashes, err := ioutil.ReadFile(baseFile + ".hash")
 	if os.IsNotExist(err) {
 		// Create the hash file.
 		f, err := os.Open(baseFile)
@@ -70,7 +71,7 @@ func TestNewReaderMismatch(t *testing.T) {
 				break
 			}
 		}
-		err = os.WriteFile(baseFile+".hash", hashes, os.ModePerm)
+		err = ioutil.WriteFile(baseFile+".hash", hashes, os.ModePerm)
 		if err != nil {
 			// We can continue for now
 			t.Error(err)
@@ -103,7 +104,7 @@ func TestNewReaderMismatch(t *testing.T) {
 		}
 		if n > 0 {
 			if cHash+4 > len(hashes) {
-				extra, _ := io.Copy(io.Discard, dec)
+				extra, _ := io.Copy(ioutil.Discard, dec)
 				t.Fatal("not enough hashes (length mismatch). Only have", len(hashes)/4, "hashes. Got block of", n, "bytes and", extra, "bytes still on stream.")
 			}
 			_, _ = xx.Write(buf[:n])
@@ -125,7 +126,7 @@ func TestNewReaderMismatch(t *testing.T) {
 					buf2 := make([]byte, sizeBack+1<<20)
 					n, _ := io.ReadFull(org, buf2)
 					if n > 0 {
-						err = os.WriteFile(baseFile+".section", buf2[:n], os.ModePerm)
+						err = ioutil.WriteFile(baseFile+".section", buf2[:n], os.ModePerm)
 						if err == nil {
 							t.Log("Wrote problematic section to", baseFile+".section")
 						}
@@ -159,7 +160,7 @@ func TestErrorReader(t *testing.T) {
 	}
 	defer zr.Close()
 
-	_, err = io.ReadAll(zr)
+	_, err = ioutil.ReadAll(zr)
 	if !errors.Is(err, wantErr) {
 		t.Errorf("want error %v, got %v", wantErr, err)
 	}
@@ -255,7 +256,7 @@ func TestNewDecoderMemory(t *testing.T) {
 	var decs = make([]*Decoder, n)
 	for i := range decs {
 		// Wrap in NopCloser to avoid shortcut.
-		input := io.NopCloser(bytes.NewBuffer(testdata.Bytes()))
+		input := ioutil.NopCloser(bytes.NewBuffer(testdata.Bytes()))
 		decs[i], err = NewReader(input, WithDecoderConcurrency(1), WithDecoderLowmem(true))
 		if err != nil {
 			t.Fatal(err)
@@ -320,7 +321,7 @@ func TestNewDecoderMemoryHighMem(t *testing.T) {
 	var decs = make([]*Decoder, n)
 	for i := range decs {
 		// Wrap in NopCloser to avoid shortcut.
-		input := io.NopCloser(bytes.NewBuffer(testdata.Bytes()))
+		input := ioutil.NopCloser(bytes.NewBuffer(testdata.Bytes()))
 		decs[i], err = NewReader(input, WithDecoderConcurrency(1), WithDecoderLowmem(false))
 		if err != nil {
 			t.Fatal(err)
@@ -374,7 +375,7 @@ func TestNewDecoderFrameSize(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = io.Copy(io.Discard, dec)
+	_, err = io.Copy(ioutil.Discard, dec)
 	if err == nil {
 		dec.Close()
 		t.Fatal("Wanted error, got none")
@@ -386,7 +387,7 @@ func TestNewDecoderFrameSize(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = io.Copy(io.Discard, dec)
+	_, err = io.Copy(ioutil.Discard, dec)
 	if err != nil {
 		dec.Close()
 		t.Fatalf("Wanted no error, got %+v", err)
@@ -524,7 +525,7 @@ func TestNewDecoderBigFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer dec.Close()
-	n, err := io.Copy(io.Discard, dec)
+	n, err := io.Copy(ioutil.Discard, dec)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -553,7 +554,7 @@ func TestNewDecoderSmallFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer dec.Close()
-	n, err := io.Copy(io.Discard, dec)
+	n, err := io.Copy(ioutil.Discard, dec)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -584,7 +585,7 @@ func TestNewDecoderFlushed(t *testing.T) {
 		t.SkipNow()
 	}
 	file := "testdata/z000028.zst"
-	payload, err := os.ReadFile(file)
+	payload, err := ioutil.ReadFile(file)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -666,7 +667,7 @@ func TestDecoderRegression(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			got, gotErr := io.ReadAll(dec)
+			got, gotErr := ioutil.ReadAll(dec)
 			t.Log("Received:", len(got), gotErr)
 
 			// Check a fresh instance
@@ -681,7 +682,7 @@ func TestDecoderRegression(t *testing.T) {
 				return
 			}
 			defer decL.Close()
-			got2, gotErr2 := io.ReadAll(decL)
+			got2, gotErr2 := ioutil.ReadAll(decL)
 			t.Log("Fresh Reader received:", len(got2), gotErr2)
 			if gotErr != gotErr2 {
 				if gotErr != nil && gotErr2 != nil && gotErr.Error() != gotErr2.Error() {
@@ -705,7 +706,7 @@ func TestDecoderRegression(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Error(err)
 			}
@@ -743,7 +744,7 @@ func TestDecoderRegression(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Error(err)
 			}
@@ -757,7 +758,7 @@ func TestDecoderRegression(t *testing.T) {
 				return
 			}
 			defer decL.Close()
-			got2, gotErr2 := io.ReadAll(decL)
+			got2, gotErr2 := ioutil.ReadAll(decL)
 			t.Log("Reader Reader received:", len(got2), gotErr2)
 			if gotErr != gotErr2 {
 				if gotErr != nil && gotErr2 != nil && gotErr.Error() != gotErr2.Error() {
@@ -795,7 +796,7 @@ func TestShort(t *testing.T) {
 		})
 		t.Run(fmt.Sprintf("Reader-%d", len(in)), func(t *testing.T) {
 			dec.Reset(bytes.NewReader(inb))
-			_, err := io.Copy(io.Discard, dec)
+			_, err := io.Copy(ioutil.Discard, dec)
 			if err == nil {
 				t.Error("want error, got nil")
 			}
@@ -804,7 +805,7 @@ func TestShort(t *testing.T) {
 }
 
 func TestDecoder_Reset(t *testing.T) {
-	in, err := os.ReadFile("testdata/z000028")
+	in, err := ioutil.ReadFile("testdata/z000028")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -847,8 +848,8 @@ func TestDecoder_Reset(t *testing.T) {
 			t.Fatalf("decoded reported length mismatch %d != %d", n, len(decoded))
 		}
 		if !bytes.Equal(decoded, in) {
-			os.WriteFile("testdata/"+t.Name()+"-z000028.got", decoded, os.ModePerm)
-			os.WriteFile("testdata/"+t.Name()+"-z000028.want", in, os.ModePerm)
+			ioutil.WriteFile("testdata/"+t.Name()+"-z000028.got", decoded, os.ModePerm)
+			ioutil.WriteFile("testdata/"+t.Name()+"-z000028.want", in, os.ModePerm)
 			t.Fatal("Decoded does not match")
 		}
 	}
@@ -858,13 +859,13 @@ func TestDecoder_Reset(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		decoded, err := io.ReadAll(io.NopCloser(dec))
+		decoded, err := ioutil.ReadAll(ioutil.NopCloser(dec))
 		if err != nil {
 			t.Fatal(err)
 		}
 		if !bytes.Equal(decoded, in) {
-			os.WriteFile("testdata/"+t.Name()+"-z000028.got", decoded, os.ModePerm)
-			os.WriteFile("testdata/"+t.Name()+"-z000028.want", in, os.ModePerm)
+			ioutil.WriteFile("testdata/"+t.Name()+"-z000028.got", decoded, os.ModePerm)
+			ioutil.WriteFile("testdata/"+t.Name()+"-z000028.want", in, os.ModePerm)
 			t.Fatal("Decoded does not match")
 		}
 	}
@@ -888,7 +889,7 @@ func TestDecoderMultiFrame(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer r.Close()
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -904,7 +905,7 @@ func TestDecoderMultiFrame(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got, err := io.ReadAll(dec)
+			got, err := ioutil.ReadAll(dec)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -912,7 +913,7 @@ func TestDecoderMultiFrame(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got2, err := io.ReadAll(dec)
+			got2, err := ioutil.ReadAll(dec)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -942,7 +943,7 @@ func TestDecoderMultiFrameReset(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer r.Close()
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -958,7 +959,7 @@ func TestDecoderMultiFrameReset(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got, err := io.ReadAll(dec)
+			got, err := ioutil.ReadAll(dec)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -976,7 +977,7 @@ func TestDecoderMultiFrameReset(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got2, err := io.ReadAll(dec)
+			got2, err := ioutil.ReadAll(dec)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -999,7 +1000,7 @@ func testDecoderFile(t *testing.T, fn string, newDec func() (*Decoder, error)) {
 			t.Fatal(err)
 			return
 		}
-		want[tt.Name+".zst"], _ = io.ReadAll(r)
+		want[tt.Name+".zst"], _ = ioutil.ReadAll(r)
 	}
 
 	dec, err := newDec()
@@ -1019,13 +1020,13 @@ func testDecoderFile(t *testing.T, fn string, newDec func() (*Decoder, error)) {
 				t.Error(err)
 				return
 			}
-			data, err := io.ReadAll(r)
+			data, err := ioutil.ReadAll(r)
 			r.Close()
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			err = dec.Reset(io.NopCloser(bytes.NewBuffer(data)))
+			err = dec.Reset(ioutil.NopCloser(bytes.NewBuffer(data)))
 			if err != nil {
 				t.Error(err)
 				return
@@ -1035,7 +1036,7 @@ func testDecoderFile(t *testing.T, fn string, newDec func() (*Decoder, error)) {
 			var wg sync.WaitGroup
 			wg.Add(1)
 			go func() {
-				got, gotError = io.ReadAll(dec)
+				got, gotError = ioutil.ReadAll(dec)
 				wg.Done()
 			}()
 
@@ -1068,12 +1069,12 @@ func testDecoderFile(t *testing.T, fn string, newDec func() (*Decoder, error)) {
 				} else {
 					fileName, _ := filepath.Abs(filepath.Join("testdata", t.Name()+"-want.bin"))
 					_ = os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
-					err := os.WriteFile(fileName, wantB, os.ModePerm)
+					err := ioutil.WriteFile(fileName, wantB, os.ModePerm)
 					t.Log("Wrote file", fileName, err)
 
 					fileName, _ = filepath.Abs(filepath.Join("testdata", t.Name()+"-"+name+".bin"))
 					_ = os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
-					err = os.WriteFile(fileName, got, os.ModePerm)
+					err = ioutil.WriteFile(fileName, got, os.ModePerm)
 					t.Log("Wrote file", fileName, err)
 				}
 				t.Logf("Length, want: %d, got: %d", len(wantB), len(got))
@@ -1106,7 +1107,7 @@ func testDecoderFileBad(t *testing.T, fn string, newDec func() (*Decoder, error)
 			t.Fatal(err)
 			return
 		}
-		want[tt.Name+".zst"], _ = io.ReadAll(r)
+		want[tt.Name+".zst"], _ = ioutil.ReadAll(r)
 	}
 
 	dec, err := newDec()
@@ -1129,7 +1130,7 @@ func testDecoderFileBad(t *testing.T, fn string, newDec func() (*Decoder, error)
 				t.Error(err)
 				return
 			}
-			got, err := io.ReadAll(dec)
+			got, err := ioutil.ReadAll(dec)
 			if err == ErrCRCMismatch && !strings.Contains(tt.Name, "badsum") {
 				t.Error(err)
 				return
@@ -1180,7 +1181,7 @@ func BenchmarkDecoder_DecoderSmall(b *testing.B) {
 				b.Fatal(err)
 			}
 			defer r.Close()
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1195,7 +1196,7 @@ func BenchmarkDecoder_DecoderSmall(b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			got, err := io.ReadAll(dec)
+			got, err := ioutil.ReadAll(dec)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1208,7 +1209,7 @@ func BenchmarkDecoder_DecoderSmall(b *testing.B) {
 					if err != nil {
 						b.Fatal(err)
 					}
-					n, err := io.Copy(io.Discard, dec)
+					n, err := io.Copy(ioutil.Discard, dec)
 					if err != nil {
 						b.Fatal(err)
 					}
@@ -1450,7 +1451,7 @@ func BenchmarkDecoder_DecodeAll(b *testing.B) {
 				b.Fatal(err)
 			}
 			defer r.Close()
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1477,7 +1478,7 @@ func BenchmarkDecoder_DecodeAllFiles(b *testing.B) {
 			return nil
 		}
 		b.Run(filepath.Base(path), func(b *testing.B) {
-			raw, err := os.ReadFile(path)
+			raw, err := ioutil.ReadFile(path)
 			if err != nil {
 				b.Error(err)
 			}
@@ -1525,7 +1526,7 @@ func BenchmarkDecoder_DecodeAllFilesP(b *testing.B) {
 			return nil
 		}
 		b.Run(filepath.Base(path), func(b *testing.B) {
-			raw, err := os.ReadFile(path)
+			raw, err := ioutil.ReadFile(path)
 			if err != nil {
 				b.Error(err)
 			}
@@ -1590,7 +1591,7 @@ func BenchmarkDecoder_DecodeAllParallel(b *testing.B) {
 				b.Fatal(err)
 			}
 			defer r.Close()
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1625,7 +1626,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 		b.Fatal(err)
 	}
 
-	data, err := os.ReadFile(path)
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -1633,7 +1634,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	n, err := io.Copy(io.Discard, dec)
+	n, err := io.Copy(ioutil.Discard, dec)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -1651,7 +1652,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			_, err := io.CopyN(io.Discard, dec, n)
+			_, err := io.CopyN(ioutil.Discard, dec, n)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1672,7 +1673,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			_, err := io.CopyN(io.Discard, dec, n)
+			_, err := io.CopyN(ioutil.Discard, dec, n)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1693,7 +1694,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			_, err := io.CopyN(io.Discard, dec, n)
+			_, err := io.CopyN(ioutil.Discard, dec, n)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1715,7 +1716,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 				b.Fatal(err)
 			}
 			// io.Copy will use io.WriterTo
-			_, err := io.Copy(io.Discard, dec)
+			_, err := io.Copy(ioutil.Discard, dec)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1736,7 +1737,7 @@ func benchmarkDecoderWithFile(path string, b *testing.B) {
 				b.Fatal(err)
 			}
 			// io.Copy will use io.WriterTo
-			_, err := io.Copy(io.Discard, dec)
+			_, err := io.Copy(ioutil.Discard, dec)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -1789,7 +1790,7 @@ func testDecoderDecodeAll(t *testing.T, fn string, dec *Decoder) {
 			t.Fatal(err)
 			return
 		}
-		want[tt.Name+".zst"], _ = io.ReadAll(r)
+		want[tt.Name+".zst"], _ = ioutil.ReadAll(r)
 	}
 	var wg sync.WaitGroup
 	for i, tt := range zr.File {
@@ -1805,7 +1806,7 @@ func testDecoderDecodeAll(t *testing.T, fn string, dec *Decoder) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1825,12 +1826,12 @@ func testDecoderDecodeAll(t *testing.T, fn string, dec *Decoder) {
 				} else {
 					fileName, _ := filepath.Abs(filepath.Join("testdata", t.Name()+"-want.bin"))
 					_ = os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
-					err := os.WriteFile(fileName, wantB, os.ModePerm)
+					err := ioutil.WriteFile(fileName, wantB, os.ModePerm)
 					t.Log("Wrote file", fileName, err)
 
 					fileName, _ = filepath.Abs(filepath.Join("testdata", t.Name()+"-got.bin"))
 					_ = os.MkdirAll(filepath.Dir(fileName), os.ModePerm)
-					err = os.WriteFile(fileName, got, os.ModePerm)
+					err = ioutil.WriteFile(fileName, got, os.ModePerm)
 					t.Log("Wrote file", fileName, err)
 				}
 				t.Logf("Length, want: %d, got: %d", len(wantB), len(got))
@@ -1862,7 +1863,7 @@ func testDecoderDecodeAllError(t *testing.T, fn string, dec *Decoder, errMap map
 			if err != nil {
 				t.Fatal(err)
 			}
-			in, err := io.ReadAll(r)
+			in, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2017,7 +2018,7 @@ func TestResetNil(t *testing.T) {
 	}
 	defer dec.Close()
 
-	_, err = io.ReadAll(dec)
+	_, err = ioutil.ReadAll(dec)
 	if err != ErrDecoderNilInput {
 		t.Fatalf("Expected ErrDecoderNilInput when decoding from a nil reader, got %v", err)
 	}
@@ -2026,7 +2027,7 @@ func TestResetNil(t *testing.T) {
 
 	dec.Reset(bytes.NewBuffer(emptyZstdBlob))
 
-	result, err := io.ReadAll(dec)
+	result, err := ioutil.ReadAll(dec)
 	if err != nil && err != io.EOF {
 		t.Fatal(err)
 	}
@@ -2036,14 +2037,14 @@ func TestResetNil(t *testing.T) {
 
 	dec.Reset(nil)
 
-	_, err = io.ReadAll(dec)
+	_, err = ioutil.ReadAll(dec)
 	if err != ErrDecoderNilInput {
 		t.Fatalf("Expected ErrDecoderNilInput when decoding from a nil reader, got %v", err)
 	}
 
 	dec.Reset(bytes.NewBuffer(emptyZstdBlob))
 
-	result, err = io.ReadAll(dec)
+	result, err = ioutil.ReadAll(dec)
 	if err != nil && err != io.EOF {
 		t.Fatal(err)
 	}
@@ -2069,7 +2070,7 @@ func TestIgnoreChecksum(t *testing.T) {
 
 		dec.Reset(bytes.NewBuffer(zstdBlob))
 
-		_, err = io.ReadAll(dec)
+		_, err = ioutil.ReadAll(dec)
 		if err == nil {
 			t.Fatal("Expected decoding error")
 		}
@@ -2089,7 +2090,7 @@ func TestIgnoreChecksum(t *testing.T) {
 
 		dec.Reset(bytes.NewBuffer(zstdBlob))
 
-		res, err := io.ReadAll(dec)
+		res, err := ioutil.ReadAll(dec)
 		if err != nil {
 			t.Fatalf("Unexpected error: '%s'", err)
 		}

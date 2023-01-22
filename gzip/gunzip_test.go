@@ -9,6 +9,7 @@ import (
 	oldgz "compress/gzip"
 	"crypto/rand"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -418,7 +419,7 @@ func TestIssue6550(t *testing.T) {
 	defer gzip.Close()
 	done := make(chan bool, 1)
 	go func() {
-		_, err := io.Copy(io.Discard, gzip)
+		_, err := io.Copy(ioutil.Discard, gzip)
 		if err == nil {
 			t.Errorf("Copy succeeded")
 		} else {
@@ -469,7 +470,7 @@ Found:
 	const hello = "hello world\n"
 
 	r.Multistream(false)
-	data, err := io.ReadAll(&r)
+	data, err := ioutil.ReadAll(&r)
 	if string(data) != hello || err != nil {
 		t.Fatalf("first stream = %q, %v, want %q, %v", string(data), err, hello, nil)
 	}
@@ -478,7 +479,7 @@ Found:
 		t.Fatalf("second reset: %v", err)
 	}
 	r.Multistream(false)
-	data, err = io.ReadAll(&r)
+	data, err = ioutil.ReadAll(&r)
 	if string(data) != hello || err != nil {
 		t.Fatalf("second stream = %q, %v, want %q, %v", string(data), err, hello, nil)
 	}
@@ -521,7 +522,7 @@ func TestWriteTo(t *testing.T) {
 		t.Fatal(err)
 	}
 	// ReadAll does not use WriteTo, but we wrap it in a NopCloser to be sure.
-	readall, err := io.ReadAll(io.NopCloser(dec))
+	readall, err := ioutil.ReadAll(ioutil.NopCloser(dec))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -573,7 +574,7 @@ func TestTruncatedStreams(t *testing.T) {
 			}
 			continue
 		}
-		_, err = io.Copy(io.Discard, r)
+		_, err = io.Copy(ioutil.Discard, r)
 		if err != io.ErrUnexpectedEOF {
 			t.Errorf("io.Copy(%d) on truncated stream: got %v, want %v", i, err, io.ErrUnexpectedEOF)
 		}
@@ -581,7 +582,7 @@ func TestTruncatedStreams(t *testing.T) {
 }
 
 func BenchmarkGunzipCopy(b *testing.B) {
-	dat, _ := os.ReadFile("testdata/test.json")
+	dat, _ := ioutil.ReadFile("testdata/test.json")
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
@@ -602,7 +603,7 @@ func BenchmarkGunzipCopy(b *testing.B) {
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, err = io.Copy(io.Discard, r)
+		_, err = io.Copy(ioutil.Discard, r)
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -610,7 +611,7 @@ func BenchmarkGunzipCopy(b *testing.B) {
 }
 
 func BenchmarkGunzipNoWriteTo(b *testing.B) {
-	dat, _ := os.ReadFile("testdata/test.json")
+	dat, _ := ioutil.ReadFile("testdata/test.json")
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
@@ -635,7 +636,7 @@ func BenchmarkGunzipNoWriteTo(b *testing.B) {
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, err = io.Copy(io.Discard, io.NopCloser(r))
+		_, err = io.Copy(ioutil.Discard, ioutil.NopCloser(r))
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -643,7 +644,7 @@ func BenchmarkGunzipNoWriteTo(b *testing.B) {
 }
 
 func BenchmarkGunzipStdlib(b *testing.B) {
-	dat, _ := os.ReadFile("testdata/test.json")
+	dat, _ := ioutil.ReadFile("testdata/test.json")
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
 	dat = append(dat, dat...)
@@ -668,7 +669,7 @@ func BenchmarkGunzipStdlib(b *testing.B) {
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, err = io.Copy(io.Discard, r)
+		_, err = io.Copy(ioutil.Discard, r)
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -691,7 +692,7 @@ func TestTruncatedGunzip(t *testing.T) {
 		go func() {
 			r, err := NewReader(bytes.NewBuffer(testdata[:i]))
 			if err == nil {
-				b, err := io.ReadAll(r)
+				b, err := ioutil.ReadAll(r)
 				if err == nil && !bytes.Equal(testdata[:i], b) {
 					close(fail)
 				}

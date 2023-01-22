@@ -3,8 +3,7 @@ package huff0
 import (
 	"bytes"
 	"fmt"
-	"io"
-	"os"
+	"io/ioutil"
 	"testing"
 
 	"github.com/klauspost/compress/zip"
@@ -101,7 +100,7 @@ func TestDecompress1X(t *testing.T) {
 }
 
 func TestDecompress1XRegression(t *testing.T) {
-	data, err := os.ReadFile("testdata/decompress1x_regression.zip")
+	data, err := ioutil.ReadFile("testdata/decompress1x_regression.zip")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +116,7 @@ func TestDecompress1XRegression(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		data, err := io.ReadAll(rc)
+		data, err := ioutil.ReadAll(rc)
 		if err != nil {
 			t.Fatal(err)
 		}

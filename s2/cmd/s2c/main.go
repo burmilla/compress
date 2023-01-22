@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -273,7 +274,7 @@ Options:`)
 				file.Close()
 				var buf *bytes.Buffer
 				for i := 0; i < *bench; i++ {
-					w := io.Discard
+					w := ioutil.Discard
 					// Verify with this buffer...
 					if *verify {
 						if buf == nil {
@@ -306,7 +307,7 @@ Options:`)
 						}
 						start := time.Now()
 						dec.Reset(buf)
-						n, err := io.Copy(io.Discard, dec)
+						n, err := io.Copy(ioutil.Discard, dec)
 						exitErr(err)
 						if int(n) != len(b) {
 							exitErr(fmt.Errorf("unexpected size, want %d, got %d", len(b), n))
@@ -358,7 +359,7 @@ Options:`)
 				file, _, mode := openFile(filename)
 				exitErr(err)
 				defer closeOnce.Do(func() { file.Close() })
-				inBytes, err := io.ReadAll(file)
+				inBytes, err := ioutil.ReadAll(file)
 				exitErr(err)
 
 				var out io.Writer
@@ -478,7 +479,7 @@ Options:`)
 			}
 			if *recomp {
 				dec := s2.NewReader(src)
-				src = io.NopCloser(dec)
+				src = ioutil.NopCloser(dec)
 			}
 
 			var out io.Writer
@@ -582,7 +583,7 @@ func verifyTo(w io.Writer) (io.Writer, func() error) {
 	go func() {
 		defer wg.Done()
 		r := s2.NewReader(pr)
-		_, err = io.Copy(io.Discard, r)
+		_, err = io.Copy(ioutil.Discard, r)
 		pr.CloseWithError(fmt.Errorf("verify: %w", err))
 	}()
 	return writer, func() error {

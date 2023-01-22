@@ -3,7 +3,7 @@ package zstd
 import (
 	"bytes"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -16,7 +16,7 @@ func TestHeader_Decode(t *testing.T) {
 	const regen = false
 	golden := make(map[string]Header)
 	if !regen {
-		b, err := os.ReadFile("testdata/headers-want.json.zst")
+		b, err := ioutil.ReadFile("testdata/headers-want.json.zst")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -50,7 +50,7 @@ func TestHeader_Decode(t *testing.T) {
 				return
 			}
 			defer r.Close()
-			b, err := io.ReadAll(r)
+			b, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Error(err)
 				return

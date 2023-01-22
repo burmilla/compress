@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"io"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"testing"
@@ -58,7 +59,7 @@ func TestReaderTruncated(t *testing.T) {
 	for i, v := range vectors {
 		r := strings.NewReader(v.input)
 		zr := NewReader(r)
-		b, err := io.ReadAll(zr)
+		b, err := ioutil.ReadAll(zr)
 		if err != io.ErrUnexpectedEOF {
 			t.Errorf("test %d, error mismatch: got %v, want io.ErrUnexpectedEOF", i, err)
 		}
@@ -142,7 +143,7 @@ func TestInflate(t *testing.T) {
 		buf := bytes.NewReader(data)
 		r := NewReader(buf)
 
-		_, err := io.Copy(io.Discard, r)
+		_, err := io.Copy(ioutil.Discard, r)
 		if (test.n == 0 && err == nil) || (test.n != 0 && err != nil) {
 			t.Logf("%q: OK:", test.id)
 			t.Logf(" - got %v", err)
@@ -171,7 +172,7 @@ func TestInflate(t *testing.T) {
 		buf := bytes.NewReader(data)
 		r := NewReader(buf)
 
-		_, err := io.Copy(io.Discard, r)
+		_, err := io.Copy(ioutil.Discard, r)
 		if test.err == (err != nil) {
 			t.Logf("%q: OK:", test.id)
 			t.Logf(" - got %v", err)
@@ -255,7 +256,7 @@ func TestWriteTo(t *testing.T) {
 
 	dec := NewReader(bytes.NewBuffer(buf))
 	// ReadAll does not use WriteTo, but we wrap it in a NopCloser to be sure.
-	readall, err := io.ReadAll(io.NopCloser(dec))
+	readall, err := ioutil.ReadAll(ioutil.NopCloser(dec))
 	if err != nil {
 		t.Fatal(err)
 	}

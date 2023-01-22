@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/signal"
 	"path"
@@ -96,7 +97,7 @@ Options:`)
 		_, _ = fmt.Fprintf(os.Stderr, "\nUse -os and -arch to specify the destination platform.")
 		os.Exit(1)
 	}
-	exec, err = io.ReadAll(s2.NewReader(bytes.NewBuffer(exec)))
+	exec, err = ioutil.ReadAll(s2.NewReader(bytes.NewBuffer(exec)))
 	exitErr(err)
 
 	written := int64(0)

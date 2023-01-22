@@ -6,6 +6,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -16,7 +17,7 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	for _, file := range args {
-		data, err := os.ReadFile(file)
+		data, err := ioutil.ReadFile(file)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -25,7 +26,7 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		err = os.WriteFile(file, data, os.ModePerm)
+		err = ioutil.WriteFile(file, data, os.ModePerm)
 		if err != nil {
 			log.Fatalln(err)
 		}
